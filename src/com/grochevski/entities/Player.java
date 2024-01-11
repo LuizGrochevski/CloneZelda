@@ -4,13 +4,15 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import com.grochevski.main.Game;
+import com.grochevski.world.Camera;
+import com.grochevski.world.World;
 
 public class Player extends Entity {
 
 	public boolean right, up, left, down;
 	public int right_dir = 0, left_dir = 1, up_dir = 2, down_dir = 3;
 	public int dir = right_dir;
-	public double speed = 0.7;
+	public double speed = 0.8;
 
 	private int frames = 0, maxFrames = 5, index = 0, maxIndex = 3;
 	private boolean moved = false;
@@ -18,6 +20,10 @@ public class Player extends Entity {
 	private BufferedImage[] leftPlayer;
 	private BufferedImage[] upPlayer;
 	private BufferedImage[] downPlayer;
+
+	public static double life = 100, maxLife = 100;
+
+	public static int ammo = 0;
 
 	public Player(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
@@ -42,20 +48,20 @@ public class Player extends Entity {
 
 	public void tick() {
 		moved = false;
-		if (right) {
+		if (right && World.isFree((int) (x + speed), this.getY())) {
 			moved = true;
 			dir = right_dir;
 			x += speed;
-		} else if (left) {
+		} else if (left && World.isFree((int) (x - speed), this.getY())) {
 			moved = true;
 			dir = left_dir;
 			x -= speed;
 		}
-		if (up) {
+		if (up && World.isFree(this.getX(), (int) (y - speed))) {
 			moved = true;
 			dir = up_dir;
 			y -= speed;
-		} else if (down) {
+		} else if (down && World.isFree(this.getX(), (int) (y + speed))) {
 			moved = true;
 			dir = down_dir;
 			y += speed;
@@ -70,18 +76,54 @@ public class Player extends Entity {
 				}
 			}
 		}
+
+		checkCollisionLifePack();
+		checkCollisionAmmo();
+
+		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 20 - Game.WIDTH);
+		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 20 - Game.HEIGHT);
+	}
+
+	public void checkCollisionAmmo() {
+		for (int i = 0; i < Game.entities.size(); i++) {
+			Entity e = Game.entities.get(i);
+			if (e instanceof Bullet) {
+				if (Entity.isColidding(this, e)) {
+					ammo++;
+					Game.entities.remove(i);
+					return;
+				}
+			}
+		}
+	}
+
+	public void checkCollisionLifePack() {
+		for (int i = 0; i < Game.entities.size(); i++) {
+			Entity e = Game.entities.get(i);
+			if (e instanceof Lifepack) {
+				if (life < maxLife) {
+					if (Entity.isColidding(this, e)) {
+						life += 8;
+						if (life >= maxLife)
+							life = maxLife;
+						Game.entities.remove(i);
+						return;
+					}
+				}
+			}
+		}
 	}
 
 	public void render(Graphics g) {
 		if (dir == right_dir) {
-			g.drawImage(rightPlayer[index], this.getX(), this.getY(), null);
+			g.drawImage(rightPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 		} else if (dir == left_dir) {
-			g.drawImage(leftPlayer[index], this.getX(), this.getY(), null);
+			g.drawImage(leftPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 		}
 		if (dir == up_dir) {
-			g.drawImage(upPlayer[index], this.getX(), this.getY(), null);
+			g.drawImage(upPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 		} else if (dir == down_dir) {
-			g.drawImage(downPlayer[index], this.getX(), this.getY(), null);
+			g.drawImage(downPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 		}
 	}
 
