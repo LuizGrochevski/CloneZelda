@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.grochevski.entities.Bullet;
+import com.grochevski.entities.Mana;
 import com.grochevski.entities.Enemy;
 import com.grochevski.entities.Entity;
 import com.grochevski.entities.Lifepack;
@@ -49,7 +49,7 @@ public class World {
 					} else if (pixelAtual == 0xFFFF0000) {
 						// Enemy
 //						Game.entities.add(new Enemy(xx * TILE_SIZE, yy * TILE_SIZE, 20, 20, Entity.ENEMY_EN));
-						Enemy en = new Enemy(xx*TILE_SIZE, yy*TILE_SIZE, 20, 20, Entity.ENEMY_EN);
+						Enemy en = new Enemy(xx * TILE_SIZE, yy * TILE_SIZE, 20, 20, Entity.ENEMY_EN);
 						Game.entities.add(en);
 						Game.enemies.add(en);
 					} else if (pixelAtual == 0xFFFF6A00) {
@@ -57,7 +57,7 @@ public class World {
 						Game.entities.add(new Weapon(xx * TILE_SIZE, yy * TILE_SIZE, 20, 20, Entity.WEAPON_EN));
 					} else if (pixelAtual == 0xFFFFD800) {
 						// Bullet
-						Game.entities.add(new Bullet(xx * TILE_SIZE, yy * TILE_SIZE, 20, 20, Entity.BULLET_EN));
+						Game.entities.add(new Mana(xx * TILE_SIZE, yy * TILE_SIZE, 20, 20, Entity.MANA_EN));
 					} else if (pixelAtual == 0xFFFF7F7F) {
 						// LifePack
 						Lifepack pack = new Lifepack(xx * TILE_SIZE, yy * TILE_SIZE, 20, 20, Entity.LIFEPACK_EN);

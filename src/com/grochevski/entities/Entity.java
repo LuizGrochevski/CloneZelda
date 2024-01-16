@@ -10,9 +10,11 @@ import com.grochevski.world.Camera;
 public class Entity {
 
 	public static BufferedImage LIFEPACK_EN = Game.spritesheet.getSprite(0, 20, 20, 20);
-	public static BufferedImage WEAPON_EN = Game.spritesheet.getSprite(0, 40, 20, 20);
-	public static BufferedImage BULLET_EN = Game.spritesheet.getSprite(0, 60, 20, 20);
+	public static BufferedImage MANA_EN = Game.spritesheet.getSprite(0, 60, 20, 20);
 	public static BufferedImage ENEMY_EN = Game.spritesheet.getSprite(120, 0, 20, 20);
+	public static BufferedImage WEAPON_EN = Game.spritesheet.getSprite(0, 40, 20, 20);
+	public static BufferedImage WEAPON_RIGHT_EN = Game.spritesheet.getSprite(20, 40, 20, 20);
+	public static BufferedImage WEAPON_LEFT_EN = Game.spritesheet.getSprite(20, 60, 20, 20);
 
 	protected double x;
 	protected double y;

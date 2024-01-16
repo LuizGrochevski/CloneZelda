@@ -13,7 +13,7 @@ public class Enemy extends Entity {
 	private double speed = 0.6;
 
 	private int maskX = 5, maskY = 5, maskWidth = 10, maskHeight = 10;
-	private int zoneX = 0, zoneY = 0, zoneWidth = 50, zoneHeight = 50;
+	private int zoneX = 0, zoneY = 0, zoneWidth = 60, zoneHeight = 60;
 
 	public int right_dir = 0, left_dir = 1, up_dir = 2, down_dir = 3;
 	public int dir = right_dir;
@@ -48,58 +48,57 @@ public class Enemy extends Entity {
 
 	public void tick() {
 //		if (Game.rand.nextInt(100) > 30) {
-		if(isZone() == true) {
-		if (isColiddingWithPlayer() == false) {
-			if ((int) x < Game.player.getX() && World.isFree((int) (x + speed), this.getY())
-					&& !isColidding((int) (x + speed), this.getY())) {
-				moved = true;
-				dir = right_dir;
-				x += speed;
-			} else if ((int) x > Game.player.getX() && World.isFree((int) (x - speed), this.getY())
-					&& !isColidding((int) (x - speed), this.getY())) {
-				moved = true;
-				dir = left_dir;
-				x -= speed;
-			}
+		if (isZone() == true) {
+			if (isColiddingWithPlayer() == false) {
+				if ((int) x < Game.player.getX() && World.isFree((int) (x + speed), this.getY())
+						&& !isColidding((int) (x + speed), this.getY())) {
+					moved = true;
+					dir = right_dir;
+					x += speed;
+				} else if ((int) x > Game.player.getX() && World.isFree((int) (x - speed), this.getY())
+						&& !isColidding((int) (x - speed), this.getY())) {
+					moved = true;
+					dir = left_dir;
+					x -= speed;
+				}
 
-			if ((int) y < Game.player.getY() && World.isFree(this.getX(), (int) (y + speed))
-					&& !isColidding(this.getX(), (int) (y + speed))) {
-				moved = true;
-				dir = up_dir;
-				y += speed;
-			} else if ((int) y > Game.player.getY() && World.isFree(this.getX(), (int) (y - speed))
-					&& !isColidding(this.getX(), (int) (y - speed))) {
-				moved = true;
-				dir = down_dir;
-				y -= speed;
-			}
+				if ((int) y < Game.player.getY() && World.isFree(this.getX(), (int) (y + speed))
+						&& !isColidding(this.getX(), (int) (y + speed))) {
+					moved = true;
+					dir = up_dir;
+					y += speed;
+				} else if ((int) y > Game.player.getY() && World.isFree(this.getX(), (int) (y - speed))
+						&& !isColidding(this.getX(), (int) (y - speed))) {
+					moved = true;
+					dir = down_dir;
+					y -= speed;
+				}
 //		}
 
-			if (moved) {
-				frames++;
-				if (frames == maxFrames) {
-					frames = 0;
-					index++;
-					if (index > maxIndex) {
-						index = 0;
+				if (moved) {
+					frames++;
+					if (frames == maxFrames) {
+						frames = 0;
+						index++;
+						if (index > maxIndex) {
+							index = 0;
+						}
 					}
 				}
-			}
-		} else {
-			if (Game.rand.nextInt(100) <= 10) {
-				Player.life-=Game.rand.nextInt(3);
-				System.out.println("Life:" + Player.life);
-				if(Player.life <= 0) {
-					System.exit(1);
+			} else {
+				if (Game.rand.nextInt(100) <= 10) {
+					Game.player.life -= Game.rand.nextInt(3);
+					Game.player.isDamaged = true;
+
 				}
 			}
-		}}
+		}
 	}
-	
+
 	public boolean isZone() {
 		Rectangle enemyCurrent = new Rectangle(this.getX() + zoneX, this.getY() + zoneY, zoneWidth, zoneHeight);
 		Rectangle player = new Rectangle(Game.player.getX(), Game.player.getY(), World.TILE_SIZE, World.TILE_SIZE);
-		
+
 		return enemyCurrent.intersects(player);
 	}
 

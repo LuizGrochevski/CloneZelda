@@ -121,8 +121,9 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		g.drawImage(image, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null);
 		
 		g.setColor(Color.WHITE);
-		g.setFont(new Font("Arial", Font.BOLD, 8));
-		g.drawString("Ammo:" + Player.ammo, 20, 120);
+		g.setFont(new Font("Arial", Font.BOLD, 15));
+		g.drawString("Mana:" + player.mana, 50, 90);
+		
 		bs.show();
 	}
 
