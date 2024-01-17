@@ -1,6 +1,5 @@
 package com.grochevski.entities;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -35,6 +34,11 @@ public class Player extends Entity {
 
 	public boolean isDamaged = false;
 	private int damegeFrames = 0;
+
+	public boolean spell = false;
+	public boolean mouseSpell = false;
+
+	public int mouseX, mouseY;
 
 	public Player(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
@@ -84,6 +88,7 @@ public class Player extends Entity {
 			dir = down_dir;
 			y += speed;
 		}
+
 		if (moved) {
 			frames++;
 			if (frames == maxFrames) {
@@ -107,6 +112,55 @@ public class Player extends Entity {
 			}
 		}
 
+		if (spell) {
+			spell = false;
+			if (mana > 0) {
+				mana--;
+
+				int dx = 0;
+				int px = 0;
+				int py = 0;
+				if (dir == right_dir) {
+					px = 4;
+					py = +15;
+					dx = 1;
+				} else {
+					px = 14;
+					py = +15;
+					dx = -1;
+				}
+
+				Spell spell = new Spell(this.getX() + px, this.getY() + py, 3, 3, null, dx, 0);
+				Game.spell.add(spell);
+			}
+		}
+
+		if (mouseSpell) {
+			mouseSpell = false;
+			if (mana > 0) {
+				mana--;
+
+				double angle = Math.atan2(mouseY - (this.getY() + 10 - Camera.y), mouseX - (this.getX() + 10 - Camera.x));
+				double dx = Math.cos(angle);
+				double dy = Math.sin(angle);
+				int px = 0;
+				int py = 0;
+
+				if (dir == right_dir) {
+					px = 4;
+					py = +15;
+				
+				} else {
+					px = 14;
+					py = +15;
+					
+				}
+
+				Spell spell = new Spell(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
+				Game.spell.add(spell);
+			}
+		}
+
 		if (life <= 0) {
 			Game.entities = new ArrayList<Entity>();
 			Game.enemies = new ArrayList<Enemy>();
@@ -127,7 +181,8 @@ public class Player extends Entity {
 			Entity e = Game.entities.get(i);
 			if (e instanceof Mana) {
 				if (Entity.isColidding(this, e)) {
-					mana += Game.rand.nextInt(5);;
+					mana += Game.rand.nextInt(30);
+					;
 					Game.entities.remove(i);
 					return;
 				}
@@ -171,23 +226,23 @@ public class Player extends Entity {
 			if (dir == right_dir) {
 				g.drawImage(rightPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 				if (hasWeapon) {
-					g.drawImage(Entity.WEAPON_RIGHT_EN, this.getX() + 7 - Camera.x, this.getY() + 3 - Camera.y, null);
+					g.drawImage(Entity.WEAPON_RIGHT_EN, this.getX() + 8 - Camera.x, this.getY() + 3 - Camera.y, null);
 				}
 			} else if (dir == left_dir) {
 				g.drawImage(leftPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 				if (hasWeapon) {
-					g.drawImage(Entity.WEAPON_LEFT_EN, this.getX() - 5 - Camera.x, this.getY() + 3 - Camera.y, null);
+					g.drawImage(Entity.WEAPON_LEFT_EN, this.getX() - 6 - Camera.x, this.getY() + 3 - Camera.y, null);
 				}
 			}
 			if (dir == up_dir) {
 				g.drawImage(upPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 				if (hasWeapon) {
-					g.drawImage(Entity.WEAPON_RIGHT_EN, this.getX() + 6 - Camera.x, this.getY() + 3 - Camera.y, null);
+					g.drawImage(Entity.WEAPON_RIGHT_EN, this.getX() + 7 - Camera.x, this.getY() + 3 - Camera.y, null);
 				}
 			} else if (dir == down_dir) {
 				g.drawImage(downPlayer[index], this.getX() - Camera.x, this.getY() - Camera.y, null);
 				if (hasWeapon) {
-					g.drawImage(Entity.WEAPON_LEFT_EN, this.getX() - 6 - Camera.x, this.getY() + 3 - Camera.y, null);
+					g.drawImage(Entity.WEAPON_LEFT_EN, this.getX() - 7 - Camera.x, this.getY() + 3 - Camera.y, null);
 				}
 			}
 		} else {

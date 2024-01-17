@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -18,11 +20,12 @@ import javax.swing.JFrame;
 import com.grochevski.entities.Enemy;
 import com.grochevski.entities.Entity;
 import com.grochevski.entities.Player;
+import com.grochevski.entities.Spell;
 import com.grochevski.graficos.Spritesheet;
 import com.grochevski.graficos.UI;
 import com.grochevski.world.World;
 
-public class Game extends Canvas implements Runnable, KeyListener {
+public class Game extends Canvas implements Runnable, KeyListener, MouseListener {
 
 	private static final long serialVersionUID = 1L;
 	public static JFrame frame;
@@ -36,25 +39,28 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
 	public static List<Entity> entities;
 	public static List<Enemy> enemies;
+	public static List<Spell> spell;
 	public static Spritesheet spritesheet;
-	
+
 	public static World world;
-	
+
 	public static Player player;
-	
+
 	public static Random rand;
-	
+
 	public static UI ui;
-	
+
 	public Game() {
 		rand = new Random();
 		addKeyListener(this);
+		addMouseListener(this);
 		setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		initFrame();
-		
+
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		entities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
+		spell = new ArrayList<Spell>();
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = new Player(0, 0, 20, 20, spritesheet.getSprite(0, 0, 20, 20));
 		entities.add(player);
@@ -92,6 +98,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
 			Entity e = entities.get(i);
 			e.tick();
 		}
+
+		for (int i = 0; i < spell.size(); i++) {
+			spell.get(i).tick();
+		}
 	}
 
 	public void render() {
@@ -113,17 +123,20 @@ public class Game extends Canvas implements Runnable, KeyListener {
 			Entity e = entities.get(i);
 			e.render(g);
 		}
+		for (int i = 0; i < spell.size(); i++) {
+			spell.get(i).render(g);
+		}
 		ui.render(g);
-		
+
 		/***/
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null);
-		
+
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Arial", Font.BOLD, 15));
 		g.drawString("Mana:" + player.mana, 50, 90);
-		
+
 		bs.show();
 	}
 
@@ -175,6 +188,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
 			player.down = true;
 		}
 
+		if (e.getKeyCode() == KeyEvent.VK_F) {
+			player.spell = true;
+		}
+
 	}
 
 	@Override
@@ -190,6 +207,41 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.down = false;
 		}
+
+		if (e.getKeyCode() == KeyEvent.VK_F) {
+			player.spell = false;
+		}
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		player.mouseSpell = true;
+		player.mouseX = (e.getX() / SCALE);
+		player.mouseY = (e.getY() / SCALE);
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 
 	}
 
