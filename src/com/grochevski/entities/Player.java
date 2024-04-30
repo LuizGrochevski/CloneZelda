@@ -2,10 +2,7 @@ package com.grochevski.entities;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
-import com.grochevski.graficos.Spritesheet;
-import com.grochevski.graficos.UI;
 import com.grochevski.main.Game;
 import com.grochevski.world.Camera;
 import com.grochevski.world.World;
@@ -28,7 +25,7 @@ public class Player extends Entity {
 
 	public double life = 100, maxLife = 100;
 
-	public int mana = 0;
+	public int mana = 100;
 
 	private boolean hasWeapon = false;
 
@@ -149,11 +146,11 @@ public class Player extends Entity {
 				if (dir == right_dir) {
 					px = 4;
 					py = +15;
-				
+
 				} else {
 					px = 14;
 					py = +15;
-					
+
 				}
 
 				Spell spell = new Spell(this.getX() + px, this.getY() + py, 3, 3, null, dx, dy);
@@ -162,14 +159,8 @@ public class Player extends Entity {
 		}
 
 		if (life <= 0) {
-			Game.entities = new ArrayList<Entity>();
-			Game.enemies = new ArrayList<Enemy>();
-			Game.spritesheet = new Spritesheet("/spritesheet.png");
-			Game.player = new Player(0, 0, 20, 20, Game.spritesheet.getSprite(0, 0, 20, 20));
-			Game.entities.add(Game.player);
-			Game.world = new World("/map.png");
-			Game.ui = new UI();
-			return;
+			life = 0;
+			Game.gameState = "GAME_OVER";
 		}
 
 		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 20 - Game.WIDTH);
@@ -181,8 +172,7 @@ public class Player extends Entity {
 			Entity e = Game.entities.get(i);
 			if (e instanceof Mana) {
 				if (Entity.isColidding(this, e)) {
-					mana += Game.rand.nextInt(30);
-					;
+					mana += Game.rand.nextInt(100);
 					Game.entities.remove(i);
 					return;
 				}

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -30,11 +31,12 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	private static final long serialVersionUID = 1L;
 	public static JFrame frame;
 	private Thread thread;
-	private boolean isRunning = true;
+	private boolean isRunning;
 	public final static int WIDTH = 320;
 	public final static int HEIGHT = 240;
 	private final int SCALE = 3;
 
+	private int CUR_LEVEL = 1, MAX_LEVEL = 2;
 	private BufferedImage image;
 
 	public static List<Entity> entities;
@@ -50,6 +52,11 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 	public static UI ui;
 
+	public static String gameState = "NORMAL";
+	private boolean showMassageGameOver;
+	private int framesGameOver = 0;
+	private boolean restartGame = false;
+
 	public Game() {
 		rand = new Random();
 		addKeyListener(this);
@@ -64,7 +71,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = new Player(0, 0, 20, 20, spritesheet.getSprite(0, 0, 20, 20));
 		entities.add(player);
-		world = new World("/map.png");
+		world = new World("/level1.png");
 		ui = new UI();
 	}
 
@@ -94,13 +101,42 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	}
 
 	public void tick() {
-		for (int i = 0; i < entities.size(); i++) {
-			Entity e = entities.get(i);
-			e.tick();
-		}
+		if (gameState == "NORMAL") {
+			this.restartGame = false;
+			for (int i = 0; i < entities.size(); i++) {
+				Entity e = entities.get(i);
+				e.tick();
+			}
 
-		for (int i = 0; i < spell.size(); i++) {
-			spell.get(i).tick();
+			for (int i = 0; i < spell.size(); i++) {
+				spell.get(i).tick();
+			}
+
+			if (enemies.size() == 0) {
+				CUR_LEVEL++;
+				if (CUR_LEVEL > MAX_LEVEL) {
+					CUR_LEVEL = 1;
+				}
+				String newWorld = "level" + CUR_LEVEL + ".png";
+				World.restartGame(newWorld);
+			}
+		} else if (gameState == "GAME_OVER") {
+			framesGameOver++;
+			if (framesGameOver == 25) {
+				framesGameOver = 0;
+				if (showMassageGameOver) {
+					showMassageGameOver = false;
+				} else {
+					showMassageGameOver = true;
+				}
+			}
+			if (restartGame) {
+				restartGame = false;
+				gameState = "NORMAL";
+				CUR_LEVEL = 1;
+				String newWorld = "level" + CUR_LEVEL + ".png";
+				World.restartGame(newWorld);
+			}
 		}
 	}
 
@@ -128,7 +164,6 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		}
 		ui.render(g);
 
-		/***/
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null);
@@ -136,6 +171,20 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Arial", Font.BOLD, 15));
 		g.drawString("Mana:" + player.mana, 50, 90);
+
+		if (gameState == "GAME_OVER") {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setColor(new Color(0, 0, 0, 100));
+			g2.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+
+			g2.setColor(Color.WHITE);
+			g2.setFont(new Font("Arial", Font.BOLD, 30));
+			g2.drawString("GAME OVER", (WIDTH * SCALE) / 2 - 65, (HEIGHT * SCALE) / 2);
+			if (showMassageGameOver) {
+				g2.drawString(">Pressione 'Enter' para reiniciar<", (WIDTH * SCALE) / 2 - 220,
+						(HEIGHT * SCALE) / 2 + 60);
+			}
+		}
 
 		bs.show();
 	}
@@ -192,6 +241,9 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			player.spell = true;
 		}
 
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			this.restartGame = true;
+		}
 	}
 
 	@Override

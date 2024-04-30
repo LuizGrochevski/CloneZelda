@@ -3,14 +3,18 @@ package com.grochevski.world;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 import com.grochevski.entities.Mana;
+import com.grochevski.entities.Player;
 import com.grochevski.entities.Enemy;
 import com.grochevski.entities.Entity;
 import com.grochevski.entities.Lifepack;
 import com.grochevski.entities.Weapon;
+import com.grochevski.graficos.Spritesheet;
+import com.grochevski.graficos.UI;
 import com.grochevski.main.Game;
 
 public class World {
@@ -93,6 +97,17 @@ public class World {
 				|| tiles[x3 + (y3 * World.WIDTH)] instanceof WallTile
 				|| tiles[x4 + (y4 * World.WIDTH)] instanceof WallTile);
 
+	}
+	
+	public static void restartGame(String level) {
+		Game.entities = new ArrayList<Entity>();
+		Game.enemies = new ArrayList<Enemy>();
+		Game.spritesheet = new Spritesheet("/spritesheet.png");
+		Game.player = new Player(0, 0, 20, 20, Game.spritesheet.getSprite(0, 0, 20, 20));
+		Game.entities.add(Game.player);
+		Game.world = new World("/"+level);
+		Game.ui = new UI();
+		return;
 	}
 
 	public void render(Graphics g) {
