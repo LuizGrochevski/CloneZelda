@@ -22,6 +22,7 @@ import com.grochevski.entities.Enemy;
 import com.grochevski.entities.Entity;
 import com.grochevski.entities.Player;
 import com.grochevski.entities.Spell;
+import com.grochevski.graficos.Menu;
 import com.grochevski.graficos.Spritesheet;
 import com.grochevski.graficos.UI;
 import com.grochevski.world.World;
@@ -34,7 +35,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	private boolean isRunning;
 	public final static int WIDTH = 320;
 	public final static int HEIGHT = 240;
-	private final int SCALE = 3;
+	public final static int SCALE = 3;
 
 	private int CUR_LEVEL = 1, MAX_LEVEL = 2;
 	private BufferedImage image;
@@ -52,7 +53,9 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 	public static UI ui;
 
-	public static String gameState = "NORMAL";
+	public static Menu menu;
+
+	public static String gameState = "MENU";
 	private boolean showMassageGameOver;
 	private int framesGameOver = 0;
 	private boolean restartGame = false;
@@ -73,6 +76,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		entities.add(player);
 		world = new World("/level1.png");
 		ui = new UI();
+		menu = new Menu();
 	}
 
 	public void initFrame() {
@@ -137,6 +141,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 				String newWorld = "level" + CUR_LEVEL + ".png";
 				World.restartGame(newWorld);
 			}
+		} else if (gameState == "MENU") {
+			menu.tick();
 		}
 	}
 
@@ -184,6 +190,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 				g2.drawString(">Pressione 'Enter' para reiniciar<", (WIDTH * SCALE) / 2 - 220,
 						(HEIGHT * SCALE) / 2 + 60);
 			}
+		} else if (gameState == "MENU") {
+			menu.render(g);
 		}
 
 		bs.show();
@@ -233,8 +241,16 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 			player.up = true;
+
+			if (gameState == "MENU") {
+				menu.up = true;
+			}
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.down = true;
+
+			if (gameState == "MENU") {
+				menu.down = true;
+			}
 		}
 
 		if (e.getKeyCode() == KeyEvent.VK_F) {
@@ -243,6 +259,14 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			this.restartGame = true;
+			if (gameState == "MENU") {
+				menu.enter = true;
+			}
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			gameState = "MENU";
+			menu.pause = true;
 		}
 	}
 
@@ -256,8 +280,16 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 			player.up = false;
+
+			if (gameState == "MENU") {
+				menu.up = false;
+			}
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.down = false;
+
+			if (gameState == "MENU") {
+				menu.down = false;
+			}
 		}
 
 		if (e.getKeyCode() == KeyEvent.VK_F) {

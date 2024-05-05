@@ -137,7 +137,8 @@ public class Player extends Entity {
 			if (mana > 0) {
 				mana--;
 
-				double angle = Math.atan2(mouseY - (this.getY() + 10 - Camera.y), mouseX - (this.getX() + 10 - Camera.x));
+				double angle = Math.atan2(mouseY - (this.getY() + 10 - Camera.y),
+						mouseX - (this.getX() + 10 - Camera.x));
 				double dx = Math.cos(angle);
 				double dy = Math.sin(angle);
 				int px = 0;
@@ -163,8 +164,13 @@ public class Player extends Entity {
 			Game.gameState = "GAME_OVER";
 		}
 
+		updateCamera();
+	}
+
+	public void updateCamera() {
 		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 20 - Game.WIDTH);
 		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 20 - Game.HEIGHT);
+
 	}
 
 	public void checkCollisionMana() {
